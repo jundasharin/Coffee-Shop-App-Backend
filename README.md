@@ -1,6 +1,5 @@
 <h1 align="center">ExpressJS - coffeeShop RESTfull API</h1>
 
-this project was created to backend my [coffeeshop](https://acupofcoffee.netlify.app/) website.
 
 ####
 
