@@ -37,11 +37,6 @@ Open .env file on your favorite code editor, and copy paste this code below :
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
-DB_DATABASE=coffeeshop
+DB_DATABASE=pos-app
 ```
 
-## License
-
-© [Anka Abdullah](https://github.com/Anka-Abdullah)
-
-https://docs.google.com/presentation/d/1ElC_POOUhnf21fdHymLwHl6oJ6BhLVkqHlPXsPR7sDg/edit?usp=sharing
