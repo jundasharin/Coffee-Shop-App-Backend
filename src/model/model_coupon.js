@@ -6,7 +6,7 @@ module.exports = {
   getCouponModel: (limit, offset, sort, search) => {
     const pagination = `LIMIT ${limit} OFFSET ${offset}`
     const orderBy = sort != null ? `ORDER BY ${sort}` : ''
-    const searching = search != null ? `WHERE promo_name like '%${search}' OR promo_code like '${search}'` : ''
+    const searching = search != null ? `WHERE coupon_name like '%${search}' OR code like '${search}'` : ' '
     return queryHelper(`${sql} ${orderBy} ${searching} ${pagination}`)
   },
   getCouponByIdModel: (id) => {
@@ -27,6 +27,6 @@ module.exports = {
     })
   },
   deleteCouponModel: (id) => {
-    return queryHelper('DELETE FROM `coupon` WHERE ?', id)
+    return queryHelper('DELETE FROM coupon WHERE ?', id)
   }
 }

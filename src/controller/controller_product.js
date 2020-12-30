@@ -31,8 +31,8 @@ module.exports = {
         totalPage,
         limit,
         totalData,
-        nextLink: nextLink && `http://localhost:3000/product?${nextLink}`,
-        prevLink: prevLink && `http://localhost:3000/product?${prevLink}`
+        nextLink: nextLink && `http://${process.env.DB_HOST}:${process.env.PORT}/product?${nextLink}`,
+        prevLink: prevLink && `http://${process.env.DB_HOST}:${process.env.PORT}/produuct?${prevLink}`
       }
       const result = await getProductModel(limit, offset, sort, search)
       const newData = {
@@ -84,7 +84,7 @@ module.exports = {
       const setData = {
         product_name,
         product_price,
-        product_image: request.file === undefined ? '' : request.file.filename,
+        image: request.file === undefined ? '' : request.file.filename,
         category_id,
         product_desc,
         size_R,
@@ -131,7 +131,7 @@ module.exports = {
       const setData = {
         product_name,
         product_price,
-        product_image: request.file === undefined ? '' : request.file.filename,
+        image: request.file === undefined ? '' : request.file.filename,
         category_id,
         product_desc,
         size_R,
@@ -147,9 +147,9 @@ module.exports = {
         delivery_endhour,
         product_stock
       }
-      const unimage = await getProductByIdModel(id)
 
-      const img = unimage[0].product_image
+      const deleteImg = await getProductByIdModel(id)
+      const img = deleteImg[0].image
 
       if (img !== '') {
         fs.unlink(`uploads/${img}`, (err) => {
@@ -169,10 +169,8 @@ module.exports = {
   deleteProduct: async (request, response) => {
     try {
       const { id } = request.params
-
-      const unimage = await getProductByIdModel(id)
-
-      const img = unimage[0].product_image
+      const deleteImg = await getProductByIdModel(id)
+      const img = deleteImg[0].image
 
       if (img !== '') {
         fs.unlink(`uploads/${img}`, (err) => {

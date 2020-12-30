@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const uploadImage = require('../middleware/multer')
-const { authorization } = require('../middleware/auth')
+const { authorization, isAdmin } = require('../middleware/auth')
+const { getCouponByIdRedis, getCouponRedis, clearDataCouponRedis } = require('../middleware/redis')
 const {
   getCoupon,
   getCouponId,
@@ -9,10 +10,10 @@ const {
   deleteCoupon
 } = require('../controller/controller_coupon')
 
-router.get('/', authorization, getCoupon)
-router.get('/:id', getCouponId)
-router.post('/', uploadImage, postCoupon)
-router.patch('/:id', uploadImage, patchCoupon)
-router.delete('/id', deleteCoupon)
+router.get('/', authorization, getCouponRedis, getCoupon)
+router.get('/:id', authorization, getCouponByIdRedis, getCouponId)
+router.post('/', isAdmin, uploadImage, postCoupon)
+router.patch('/:id', isAdmin, clearDataCouponRedis, uploadImage, patchCoupon)
+router.delete('/id', isAdmin, clearDataCouponRedis, deleteCoupon)
 
 module.exports = router

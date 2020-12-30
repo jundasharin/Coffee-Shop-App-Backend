@@ -8,7 +8,7 @@ const {
 } = require('../model/model_coupon')
 const helper = require('../helper/response')
 const qs = require('querystring')
-// const fs = require('fs')
+const fs = require('fs')
 const redis = require('redis')
 const client = redis.createClient()
 
@@ -39,9 +39,7 @@ module.exports = {
         result,
         pageInfo
       }
-      client.setex(
-          `getPromo: ${JSON.stringify(request.query)}`, 3600, JSON.stringify(newData)
-      )
+      client.setex(`getPromo: ${JSON.stringify(request.query)}`, 3600, JSON.stringify(newData))
 
       return helper.response(response, 200, 'Success Get Coupon', result, pageInfo)
       // response.status(200).send(result)
@@ -54,6 +52,7 @@ module.exports = {
       const { id } = request.params
       const result = await getCouponByIdModel(id)
       if (result.length > 0) {
+        client.setex(`getcouponbyid:${id}`, 3600, JSON.stringify(result))
         return helper.response(response, 200, 'Success get coupon by Id', result)
       } else {
         return helper.response(response, 404, `Coupon by Id : ${id} Not Found`)
@@ -66,15 +65,15 @@ module.exports = {
     try {
       const {
         coupon_name,
-        coupon_discount,
+        discount,
         limitmax,
         code,
         desc
       } = request.body
       const setData = {
         coupon_name,
-        coupon_image: request.file === undefined ? '' : request.file.filename,
-        coupon_discount,
+        image: request.file === undefined ? '' : request.file.filename,
+        discount,
         limitmax,
         code,
         desc
@@ -90,24 +89,29 @@ module.exports = {
     try {
       const { id } = request.params
       const {
-        coupon_id,
         coupon_name,
-        coupon_discount,
-        coupon_limitmax,
-        coupon_code,
-        coupon_desc
+        discount,
+        limitmax,
+        code,
+        desc
       } = request.body
       const setData = {
-        coupon_id,
         coupon_name,
-        coupon_image: request.file === undefined ? '' : request.file.filename,
-        coupon_discount,
-        coupon_limitmax,
-        coupon_code,
-        coupon_desc
+        image: request.file === undefined ? '' : request.file.filename,
+        discount,
+        limitmax,
+        code,
+        desc
       }
-      const checkId = await getCouponByIdModel(id)
-      if (checkId.length > 0) {
+
+      const deleteImg = await getCouponByIdModel(id)
+      const img = deleteImg[0].image
+
+      if (img !== '') {
+        fs.unlink(`uploads/${img}`, (err) => {
+          if (err) throw err
+          console.log('File Deleted !')
+        })
         const result = await patchCouponModel(setData, id)
         return helper.response(response, 200, `Success Update Coupon id : ${id}`, result)
       } else {

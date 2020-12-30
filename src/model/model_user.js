@@ -1,26 +1,19 @@
-const connection = require('../config/mysql')
+const { queryHelper } = require('../helper/query')
 
 module.exports = {
   registerUserModel: (setData) => {
-    return new Promise((resolve, reject) => {
-      connection.query('INSERT INTO user1 SET ?', setData, (error, result) => {
-        if (!error) {
-          const newResult = {
-            user_id: result.insertId, ...setData
-          }
-          delete newResult.user_password
-          resolve(newResult)
-        } else {
-          reject(new Error(error))
-        }
-      })
-    })
+    return queryHelper('INSERT INTO user SET ?', setData)
   },
   checkEmailModel: (email) => {
-    return new Promise((resolve, reject) => {
-      connection.query('SELECT user_id, user_email, user_password FROM user1 WHERE user_email = ?', email, (error, result) => {
-        !error ? resolve(result) : reject(new Error(error))
-      })
-    })
+    return queryHelper('SELECT * FROM user WHERE user_email = ?', email)
+  },
+  getUserbyIdModel: (id) => {
+    return queryHelper('SELECT * FROM user WHERE user_id = ?', id)
+  },
+  patchUserModel: (setData, id) => {
+    return queryHelper('UPDATE user SET ? WHERE user_id = ?', [setData, id])
+  },
+  deleteUserModel: (id) => {
+    return queryHelper('DELETE FROM user WHERE user_id =?', id)
   }
 }

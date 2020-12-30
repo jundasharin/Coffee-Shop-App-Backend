@@ -23,9 +23,29 @@ module.exports = {
       return helper.response(response, 400, 'Please Login First!')
     }
   },
-  isAdmin: (request, response, next) => {
-    console.log('middleware isAdmin')
-    console.log(request.decodeToken)
-    next()
+  isAdmin: (req, res, next) => {
+    let token = req.headers.authorization
+    if (!token) {
+      return helper.response(res, 400, 'please login first')
+    } else {
+      token = token.split(' ')[1]
+      jwt.verify(token, 'sayang', (error, result) => {
+        if (
+          (error && error.name === 'JsonWebTokenError') ||
+          (error && error.name === 'TokenExpiredError')
+        ) {
+          console.log(error)
+          return helper.response(res, 400, error.message)
+        } else {
+          console.log(result.roleId)
+          if (result.roleId !== 1) {
+            return helper.response(res, 400, 'you cannot access this end point')
+          } else {
+            req.token = result
+            next()
+          }
+        }
+      })
+    }
   }
 }
